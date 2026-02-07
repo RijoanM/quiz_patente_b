@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Patente B - Esame Teorico 2023</title>
+    <meta name="description" content="Quiz Patente B online con 7139 domande ufficiali 2023. Preparati per l'esame teorico della patente B.">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .loading-screen {
+            padding: 60px 30px;
+            text-align: center;
+        }
+
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            padding: 20px;
+            background: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #6c757d;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        .timer { 
+            color: #007bff; 
+        }
+        
+        .timer.warning { 
+            color: #dc3545; 
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .remaining { color: #495057; }
+
+        .quiz-content {
+            padding: 30px;
+        }
+
+        .question-container {
+            margin-bottom: 30px;
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .question-number {
+            color: #667eea;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .category-badge {
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            max-width: 400px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .question-image {
+            width: 100%;
+            max-width: 400px;
+            margin: 20px auto;
+            display: block;
+        }
+
+        .question-image img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .question-text {
+            font-size: 20px;
+            color: #2c3e50;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .answers {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .answer-btn {
+            flex: 1;
+            min-width: 120px;
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            border: 3px solid #dee2e6;
+            background: white;
+            color: #495057;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .answer-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-color: #667eea;
+        }
+
+        .answer-btn.selected {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            gap: 10px;
+        }
+
+        .nav-btn {
+            padding: 12px 30px;
+            font-size: 16px;
+            font-weight: bold;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            background: #667eea;
+            color: white;
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .nav-btn.primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .nav-btn.primary:hover {
+            background: #5568d3;
+        }
+
+        .result-screen {
+            padding: 30px;
+        }
+
+        .result-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .result-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+
+        .result-title {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .result-message {
+            font-size: 18px;
+            color: #6c757d;
+            margin-bottom: 30px;
+        }
+
+        .result-summary {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+
+        .result-stat {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .result-stat:last-child {
+            border-bottom: none;
+        }
+
+        .questions-review {
+            margin-top: 30px;
+        }
+
+        .review-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+
+        .review-item {
+            background: white;
+            border: 2px solid #dee2e6;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+
+        .review-item.correct {
+            border-color: #28a745;
+            background: #f1f9f3;
+        }
+
+        .review-item.wrong {
+            border-color: #dc3545;
+            background: #fcf2f3;
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .review-question-num {
+            font-weight: bold;
+            color: #495057;
+        }
+
+        .review-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .review-badge.correct {
+            background: #28a745;
+            color: white;
+        }
+
+        .review-badge.wrong {
+            background: #dc3545;
+            color: white;
+        }
+
+        .review-question-text {
+            font-size: 16px;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .review-answer {
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        .review-category {
+            font-size: 12px;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+
+        .review-image {
+            max-width: 300px;
+            margin: 10px 0;
+        }
+
+        .review-image img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+
+        .restart-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            display: block;
+            margin: 30px auto;
+        }
+
+        .restart-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: #e9ecef;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s ease;
+        }
+
+        .finish-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .finish-btn:hover {
+            background: #218838;
+        }
+
+        .error-message {
+            padding: 30px;
+            text-align: center;
+            color: #dc3545;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+
+            .container {
+                border-radius: 10px;
+            }
+
+            .header {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 22px;
+            }
+
+            .quiz-content {
+                padding: 20px;
+            }
+
+            .question-text {
+                font-size: 18px;
+            }
+
+            .answers {
+                flex-direction: column;
+            }
+            
+            .answer-btn {
+                min-width: 100%;
+            }
+
+            .navigation {
+                flex-direction: column;
+            }
+
+            .nav-btn {
+                width: 100%;
+            }
+
+            .stats {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚗 Quiz Patente B</h1>
+            <p>Esame Teorico - Simulazione Ufficiale 2023</p>
+        </div>
+        
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressBar"></div>
+        </div>
+
+        <div class="stats" id="stats" style="display: none;">
+            <div class="stat-item">
+                <div class="stat-label">Tempo Rimasto</div>
+                <div class="stat-value timer" id="timer">20:00</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Domanda</div>
+                <div class="stat-value remaining" id="currentQuestion">1/30</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Risposte Date</div>
+                <div class="stat-value remaining" id="answeredCount">0/30</div>
+            </div>
+        </div>
+
+        <div class="quiz-content" id="quizContent">
+            <div class="loading-screen">
+                <div class="loading-spinner"></div>
+                <p>Caricamento domande in corso...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== CONFIGURAZIONE =====
+        // Scegli UNA delle opzioni qui sotto:
+        
+        // OPZIONE 1: File locali nella stessa cartella (CONSIGLIATO)
+        // Struttura: index.html, quizPatenteB2023.json, img_sign/550.png, img_sign/552.png, etc.
+        const JSON_URL = 'quizPatenteB2023.json';
+        const IMAGES_BASE_URL = ''; // Lascia vuoto, le immagini sono in img_sign/
+        
+        // OPZIONE 2: Da GitHub/CDN
+        // Decommenta le righe qui sotto e commenta l'Opzione 1
+        // const JSON_URL = 'https://raw.githubusercontent.com/TUO-USERNAME/TUO-REPO/main/quizPatenteB2023.json';
+        // const IMAGES_BASE_URL = 'https://raw.githubusercontent.com/TUO-USERNAME/TUO-REPO/main';
+        
+        // OPZIONE 3: File JSON locale ma immagini da CDN/GitHub
+        // const JSON_URL = 'quizPatenteB2023.json';
+        // const IMAGES_BASE_URL = 'https://tuosito.com/percorso';
+        
+        // NOTA: Le immagini nel JSON sono salvate come "/img_sign/550.png"
+        // Questo script rimuove automaticamente lo "/" iniziale
+
+        // ===== VARIABILI GLOBALI =====
+        let allQuestions = [];
+        let selectedQuestions = [];
+        let currentQuestionIndex = 0;
+        let userAnswers = new Array(30).fill(null);
+        let quizFinished = false;
+        let timeRemaining = 1200; // 20 minuti
+        let timerInterval;
+
+        // ===== FUNZIONI DI CARICAMENTO =====
+        
+        async function loadQuestions() {
+            try {
+                const response = await fetch(JSON_URL);
+                if (!response.ok) {
+                    throw new Error('Impossibile caricare le domande');
+                }
+                const data = await response.json();
+                
+                // Converti la struttura gerarchica in array piatto
+                allQuestions = flattenQuestions(data);
+                
+                console.log(`✅ Caricate ${allQuestions.length} domande`);
+                
+                // Seleziona 30 domande casuali
+                selectRandomQuestions();
+                
+                // Avvia il quiz
+                document.getElementById('stats').style.display = 'flex';
+                startQuiz();
+            } catch (error) {
+                console.error('Errore:', error);
+                document.getElementById('quizContent').innerHTML = `
+                    <div class="error-message">
+                        <h2>❌ Errore nel caricamento</h2>
+                        <p>Impossibile caricare le domande del quiz.</p>
+                        <p style="font-size: 14px; color: #6c757d;">Errore: ${error.message}</p>
+                        <button class="restart-btn" onclick="location.reload()">🔄 Riprova</button>
+                    </div>
+                `;
+            }
+        }
+
+        function flattenQuestions(data) {
+            const questions = [];
+            
+            for (const category in data) {
+                for (const subcategory in data[category]) {
+                    const questionsArray = data[category][subcategory];
+                    
+                    questionsArray.forEach((q, index) => {
+                        questions.push({
+                            id: `${category}-${subcategory}-${index}`,
+                            category: formatCategoryName(category),
+                            subcategory: formatCategoryName(subcategory),
+                            question: q.q,
+                            answer: q.a,
+                            image: q.img
+                        });
+                    });
+                }
+            }
+            
+            return questions;
+        }
+
+        function formatCategoryName(name) {
+            return name
+                .split('-')
+                .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                .join(' ');
+        }
+
+        function selectRandomQuestions() {
+            const shuffled = [...allQuestions].sort(() => Math.random() - 0.5);
+            selectedQuestions = shuffled.slice(0, 30);
+        }
+
+        function getImageUrl(imagePath) {
+            if (!imagePath) return null;
+            
+            // Rimuovi lo slash iniziale se presente
+            const cleanPath = imagePath.startsWith('/') ? imagePath.substring(1) : imagePath;
+            
+            // Se IMAGES_BASE_URL è vuoto, usa il path relativo
+            if (IMAGES_BASE_URL === '') {
+                return cleanPath;
+            }
+            
+            // Altrimenti combina base URL + path
+            return IMAGES_BASE_URL + (IMAGES_BASE_URL.endsWith('/') ? '' : '/') + cleanPath;
+        }
+
+        // ===== FUNZIONI TIMER =====
+        
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeRemaining--;
+                updateTimerDisplay();
+
+                if (timeRemaining <= 0) {
+                    clearInterval(timerInterval);
+                    endQuiz('timeout');
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeRemaining / 60);
+            const seconds = timeRemaining % 60;
+            const timerElement = document.getElementById('timer');
+            timerElement.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            
+            if (timeRemaining <= 180) {
+                timerElement.classList.add('warning');
+            }
+        }
+
+        // ===== FUNZIONI UI =====
+        
+        function updateStats() {
+            document.getElementById('currentQuestion').textContent = `${currentQuestionIndex + 1}/30`;
+            const answeredCount = userAnswers.filter(a => a !== null).length;
+            document.getElementById('answeredCount').textContent = `${answeredCount}/30`;
+            
+            const progress = ((currentQuestionIndex + 1) / 30) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+
+        function showQuestion() {
+            if (quizFinished) return;
+
+            const question = selectedQuestions[currentQuestionIndex];
+            const quizContent = document.getElementById('quizContent');
+            
+            let imageHTML = '';
+            if (question.image) {
+                const imageUrl = getImageUrl(question.image);
+                imageHTML = `<div class="question-image"><img src="${imageUrl}" alt="Immagine della domanda" loading="lazy" onerror="this.parentElement.style.display='none'"></div>`;
+            }
+            
+            quizContent.innerHTML = `
+                <div class="question-container">
+                    <div class="question-header">
+                        <div class="question-number">Domanda ${currentQuestionIndex + 1} di 30</div>
+                        <div class="category-badge" title="${question.category} - ${question.subcategory}">
+                            ${question.category}
+                        </div>
+                    </div>
+                    ${imageHTML}
+                    <div class="question-text">${question.question}</div>
+                    <div class="answers">
+                        <button class="answer-btn ${userAnswers[currentQuestionIndex] === true ? 'selected' : ''}" 
+                                onclick="selectAnswer(true)">
+                            ✓ VERO
+                        </button>
+                        <button class="answer-btn ${userAnswers[currentQuestionIndex] === false ? 'selected' : ''}" 
+                                onclick="selectAnswer(false)">
+                            ✗ FALSO
+                        </button>
+                    </div>
+                </div>
+                <div class="navigation">
+                    <button class="nav-btn" onclick="previousQuestion()" 
+                            ${currentQuestionIndex === 0 ? 'disabled' : ''}>
+                        ← Precedente
+                    </button>
+                    ${currentQuestionIndex === 29 ? 
+                        '<button class="finish-btn" onclick="confirmFinish()">🏁 Termina Quiz</button>' :
+                        '<button class="nav-btn primary" onclick="nextQuestion()">Successiva →</button>'
+                    }
+                </div>
+            `;
+            
+            updateStats();
+        }
+
+        // ===== FUNZIONI NAVIGAZIONE =====
+        
+        function selectAnswer(answer) {
+            userAnswers[currentQuestionIndex] = answer;
+            showQuestion();
+        }
+
+        function previousQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                showQuestion();
+            }
+        }
+
+        function nextQuestion() {
+            if (currentQuestionIndex < 29) {
+                currentQuestionIndex++;
+                showQuestion();
+            }
+        }
+
+        function confirmFinish() {
+            const answeredCount = userAnswers.filter(a => a !== null).length;
+            if (answeredCount < 30) {
+                if (!confirm(`⚠️ Hai risposto solo a ${answeredCount} domande su 30.\n\nVuoi terminare comunque?`)) {
+                    return;
+                }
+            }
+            clearInterval(timerInterval);
+            endQuiz('completed');
+        }
+
+        // ===== FUNZIONE FINE QUIZ =====
+        
+        function endQuiz(reason) {
+            quizFinished = true;
+            
+            // Calcola risultati
+            let correctAnswers = 0;
+            let wrongAnswers = 0;
+            const results = [];
+
+            for (let i = 0; i < 30; i++) {
+                const question = selectedQuestions[i];
+                const userAnswer = userAnswers[i];
+                const correctAnswer = question.answer;
+                const isCorrect = userAnswer === correctAnswer;
+                
+                if (userAnswer !== null) {
+                    if (isCorrect) {
+                        correctAnswers++;
+                    } else {
+                        wrongAnswers++;
+                    }
+                }
+
+                results.push({
+                    question: question,
+                    userAnswer: userAnswer,
+                    correctAnswer: correctAnswer,
+                    isCorrect: isCorrect,
+                    questionNumber: i + 1
+                });
+            }
+
+            const passed = wrongAnswers <= 3 && reason !== 'timeout' && userAnswers.filter(a => a !== null).length === 30;
+            
+            const timeUsed = 1200 - timeRemaining;
+            const minutesUsed = Math.floor(timeUsed / 60);
+            const secondsUsed = timeUsed % 60;
+
+            let resultMessage = '';
+            if (reason === 'timeout') {
+                resultMessage = '⏰ Tempo scaduto! Non hai completato l\'esame in tempo.';
+            } else if (passed) {
+                resultMessage = '🎉 Complimenti! Hai superato l\'esame teorico!';
+            } else {
+                resultMessage = `📉 Hai commesso ${wrongAnswers} ${wrongAnswers === 1 ? 'errore' : 'errori'}. Servono massimo 3 errori per essere promosso.`;
+            }
+
+            const quizContent = document.getElementById('quizContent');
+            
+            // Genera HTML per revisione domande
+            let reviewHTML = '';
+            results.forEach(result => {
+                if (result.userAnswer !== null) {
+                    const statusClass = result.isCorrect ? 'correct' : 'wrong';
+                    const statusBadge = result.isCorrect ? '✓ CORRETTA' : '✗ ERRATA';
+                    const userAnswerText = result.userAnswer ? 'VERO' : 'FALSO';
+                    const correctAnswerText = result.correctAnswer ? 'VERO' : 'FALSO';
+                    
+                    let reviewImageHTML = '';
+                    if (result.question.image) {
+                        const imageUrl = getImageUrl(result.question.image);
+                        reviewImageHTML = `<div class="review-image"><img src="${imageUrl}" alt="Immagine della domanda" loading="lazy" onerror="this.parentElement.style.display='none'"></div>`;
+                    }
+                    
+                    reviewHTML += `
+                        <div class="review-item ${statusClass}">
+                            <div class="review-header">
+                                <span class="review-question-num">Domanda ${result.questionNumber}</span>
+                                <span class="review-badge ${statusClass}">${statusBadge}</span>
+                            </div>
+                            ${reviewImageHTML}
+                            <div class="review-question-text">${result.question.question}</div>
+                            <div class="review-category">📚 ${result.question.category} - ${result.question.subcategory}</div>
+                            <div class="review-answer">
+                                <strong>Tua risposta:</strong> <span style="color: ${result.isCorrect ? '#28a745' : '#dc3545'}">${userAnswerText}</span> | 
+                                <strong>Risposta corretta:</strong> <span style="color: #28a745">${correctAnswerText}</span>
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+
+            quizContent.innerHTML = `
+                <div class="result-screen">
+                    <div class="result-header">
+                        <div class="result-icon">${passed ? '🎉' : '😔'}</div>
+                        <div class="result-title" style="color: ${passed ? '#28a745' : '#dc3545'}">
+                            ${passed ? 'ESAME SUPERATO!' : 'ESAME NON SUPERATO'}
+                        </div>
+                        <div class="result-message">${resultMessage}</div>
+                    </div>
+
+                    <div class="result-summary">
+                        <div class="result-stat">
+                            <span>📝 Domande completate:</span>
+                            <strong>${userAnswers.filter(a => a !== null).length}/30</strong>
+                        </div>
+                        <div class="result-stat">
+                            <span>✅ Risposte corrette:</span>
+                            <strong style="color: #28a745">${correctAnswers}</strong>
+                        </div>
+                        <div class="result-stat">
+                            <span>❌ Risposte errate:</span>
+                            <strong style="color: #dc3545">${wrongAnswers}</strong>
+                        </div>
+                        <div class="result-stat">
+                            <span>🎯 Punteggio finale:</span>
+                            <strong>${correctAnswers}/30 punti</strong>
+                        </div>
+                        <div class="result-stat">
+                            <span>⏱️ Tempo impiegato:</span>
+                            <strong>${minutesUsed}:${secondsUsed.toString().padStart(2, '0')}</strong>
+                        </div>
+                        <div class="result-stat">
+                            <span>📊 Percentuale corrette:</span>
+                            <strong>${Math.round((correctAnswers/30)*100)}%</strong>
+                        </div>
+                    </div>
+
+                    <div class="questions-review">
+                        <div class="review-title">📋 Revisione Dettagliata</div>
+                        ${reviewHTML}
+                    </div>
+
+                    <button class="restart-btn" onclick="restartQuiz()">🔄 Nuovo Quiz (30 Domande Casuali)</button>
+                </div>
+            `;
+        }
+
+        // ===== FUNZIONE RESTART =====
+        
+        function restartQuiz() {
+            currentQuestionIndex = 0;
+            userAnswers = new Array(30).fill(null);
+            quizFinished = false;
+            timeRemaining = 1200;
+            
+            if (timerInterval) {
+                clearInterval(timerInterval);
+            }
+            
+            // Seleziona nuove domande casuali
+            selectRandomQuestions();
+            
+            document.getElementById('timer').classList.remove('warning');
+            updateTimerDisplay();
+            startTimer();
+            showQuestion();
+        }
+
+        function startQuiz() {
+            updateTimerDisplay();
+            startTimer();
+            showQuestion();
+        }
+
+        // ===== AVVIO =====
+        loadQuestions();
+    </script>
+</body>
+</html>
